@@ -1,0 +1,15 @@
+# Python files
+.venv/
+__pycache__/
+*.pyc
+
+# Data & Cache
+backend/cache/
+
+# System files
+.DS_Store
+.env
+
+# Build outputs (if any)
+dist/
+build/
