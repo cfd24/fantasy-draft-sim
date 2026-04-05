@@ -8,20 +8,22 @@ This file tracks the day-by-day evolution of the project. **MANDATORY:** Update 
 
 ### What Happened
 - **Project Initialized**: Confirmed the repository structure and AI Context for the `fantasy-draft` sub-project.
-- **Data Source Challenge**: Discovered that Baseball Reference and FanGraphs have implemented aggressive bot detection (403 Forbidden), breaking standard `pybaseball` stats fetching.
+- **Git Remote Established**: Successfully linked the local project to `git@github.com:cfd24/fantasy-draft-sim.git`.
+- **Data Source Challenge**: Discovered that Baseball Reference and FanGraphs have implemented aggressive bot detection (403 Forbidden).
+- **Environment Fix**: Resolved a critical `cryptography` architecture mismatch (`arm64` vs `x86_64`) in the Anaconda environment by building from source.
 - **Architectural Solution**: 
-  - Created `backend/loader.py` to centralize all data fetching.
-  - Implemented a **global requests patch** with browser-like headers to bypass simple scraping blocks.
-  - Added a **CSV Caching layer** (`backend/cache/`) to store data locally after the first pull.
-  - Implemented **Statcast (Baseball Savant) fallbacks** for when primary leaderboard sources fail.
-- **Success**: The `explore.py` script is now fully functional, pulling 2023 season data (Batters & Pitchers) and saving it to your local machine.
+  - Created `backend/loader.py` with a **global requests patch** (custom browser headers) to bypass 403 blocks.
+  - Added a **CSV Caching layer** (`backend/cache/`) to store data locally.
+- **Success**: The `explore.py` script is operational, and the project is fully pushed to GitHub.
 
 ### Next Steps
-- [ ] **Z-Score Valuation**: Implement the core player ranking logic using the z-score method across 5x5 Roto categories.
-- [ ] **Data Cleaning**: Map the fallback Statcast metrics (like `xera`) more precisely to standard Roto categories for one-to-one comparison.
-- [ ] **Phase 0 Draft Engine**: Start building the terminal-based snake draft logic once player rankings are refined.
+- [ ] **Data Refinement**: Find a reliable way to get full 5x5 Roto stats (HR, RBI, R, SB, W, SV) as the current Statcast fallback only provides quality-of-contact metrics.
+- [ ] **Z-Score Valuation**: Implement the core player ranking logic using the z-score method.
+- [ ] **Phase 0 Draft Engine**: Start building the terminal-based snake draft logic.
 
 ### Stopping Point Status
-- **Code**: `explore.py` is green and running.
-- **Data**: 2023 Batting/Pitching CSVs are safely in your `cache/` folder.
-- **Context**: AI Context is fully updated and aware of the new `loader.py` architecture.
+- **Code**: `explore.py` and `loader.py` are functional and environment-ready.
+- **Git**: All progress pushed to `origin main`.
+- **Data**: Initial 2023 CSVs cached; need expansion for full Roto categories.
+- **Context**: AI Context is fully updated with the environment and repo details.
+
