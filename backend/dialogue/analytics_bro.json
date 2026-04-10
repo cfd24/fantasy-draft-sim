@@ -1,0 +1,20 @@
+{
+  "name": "Analytics Bro",
+  "archetype": "Analytics",
+  "quotes": {
+    "round_early": [
+      "This pick optimizes my Statcast profile significantly.",
+      "His barrel rate and xwOBA suggest massive regression to the mean is coming, in a good way.",
+      "I'm not drafting a player, I'm drafting a collection of elite data points."
+    ],
+    "value_pick": [
+      "The market is severely underestimating his xFIP. Practical arbitrage.",
+      "Got him at a 15% discount relative to his projected WAR."
+    ],
+    "generic": [
+      "Trust the process. The numbers never lie.",
+      "If you aren't using a three-year weighted average, you're just guessing.",
+      "Launch angle is the only stat that matters here."
+    ]
+  }
+}

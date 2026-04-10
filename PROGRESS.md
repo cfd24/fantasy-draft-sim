@@ -16,6 +16,12 @@ This file tracks the day-by-day evolution of the project. **MANDATORY:** Update 
   - Added a **CSV Caching layer** (`backend/cache/`) to store data locally.
 - **Success**: The `explore.py` script is operational, and the project is fully pushed to GitHub.
 
+### Time Spent
+- **Total**: ~4 hours (on and off)
+- **Brainstorming**: 2 hours
+- **Implementation**: 2 hours
+- *Note: Mostly hands-off, letting AI do everything.*
+
 ### Next Steps
 - [ ] **Data Refinement**: Find a reliable way to get full 5x5 Roto stats (HR, RBI, R, SB, W, SV) as the current Statcast fallback only provides quality-of-contact metrics.
 - [ ] **Z-Score Valuation**: Implement the core player ranking logic using the z-score method.
@@ -27,3 +33,58 @@ This file tracks the day-by-day evolution of the project. **MANDATORY:** Update 
 - **Data**: Initial 2023 CSVs cached; need expansion for full Roto categories.
 - **Context**: AI Context is fully updated with the environment and repo details.
 
+## 2026-04-08: Roadmap V1 Alignment (The "True Final Form")
+
+### What Happened
+- **Roadmap Reevaluation**: Shifted focus to align with the `ROADMAP.md` specifications for a "True V1" Summer 2026 launch.
+- **Deeper Rosters**: Updated the `DraftSession` to support 17-man rosters (`C, 1B, 2B, 3B, SS, 3xOF, 2xSP, 2xRP, UTIL, 4xBN`).
+- **Position Scarcity Integration**: Implemented a multiplier system in the valuation engine to correctly value scarce positions (C: 1.25x, SS: 1.1x).
+- **Personality & Dialogue System**: 
+  - Created `backend/dialogue/` folder with JSON personality files for **Analytics Bro**, **Old School Stan**, and **The Reach King**.
+  - Integrated personality-aware quotes into the Draft API responses.
+- **The Oracle (Scoring Engine)**: Implemented `scoring.py` and the `/evaluate` endpoint, enabling post-draft (or live) team rankings based on actual historical performance.
+- **AI GM Infrastructure**: Implemented `ai_gm.py` logic, ready for LLM-powered reasoning integration.
+- **Server Reloading**: Enabled `--reload` on the FastAPI server for faster development.
+
+### Time Spent
+- **Total**: ~3 hours
+- **Brainstorming**: 1 hour (Roadmap alignment)
+- **Implementation**: 2 hours (Refactoring engine and bots)
+
+### Next Steps
+- [ ] **Frontend**: Start the React UI (Draft Board, Player Pool).
+- [ ] **AI GM Integration**: Add API keys and enable live reasoning generation.
+- [ ] **Additional Personas**: Complete dialogue sets for "Hometown Hero" and "Sleeper Cell".
+
+### Stopping Point Status
+- **Backend**: V1 core engine is complete and aligned with the roadmap.
+- **API**: `/init`, `/state`, `/pick`, and `/evaluate` are fully functional.
+- **PBP / Logic**: Roster validation and position scarcity are verified.
+## 2026-04-10: React Frontend Initialization (Phase 5)
+
+### What Happened
+- **Frontend Architecture**: Initialized a new Vite + React project in the `frontend/` directory.
+- **Design System**: Set up `index.css` with a modern dark mode, glassmorphism aesthetic, and custom CSS variables matching the overarching portfolio style.
+- **Core UI Components Built**:
+  - `App.jsx` serves as the main "Draft Board" layout.
+  - Built a searchable, sortable **Player Pool** table displaying z-score valuations.
+  - Added a real-time **Roster Tracker** sidebar.
+  - Implemented an animated **Bot Dialogue** chat bubble for AI picks.
+- **Backend Integration**: 
+  - Added CORS to the FastAPI backend.
+  - Frontend successfully pulls draft state, available players, and handles drafting actions via Axios.
+  - Added "The Oracle" leaderboard view that automatically triggers when the draft is complete to show final standings.
+
+### Time Spent
+- **Total**: ~2 hours
+- **Implementation**: 2 hours (React setup, styling, state management)
+
+### Next Steps
+- [ ] **AI GM Integration**: Hook up the actual LLM `AIGMBot` with an API key and populate the AI prompt logic.
+- [ ] **Additional Personas**: Create JSON dialogue files for remaining personalities (Hometown Hero, Sleeper Cell).
+- [ ] **Frontend Polish**: Add more animations and separate components into their own files for cleanliness.
+
+### Stopping Point Status
+- **Servers**: Backend runs on `localhost:8000` and Frontend on `localhost:3001`. (Both are being shut down for this pause).
+- **Functionality**: A full mock draft can be run from the UI, bots auto-pick, and final analytics standings work perfectly.
+- **Git**: All work committed and pushed.

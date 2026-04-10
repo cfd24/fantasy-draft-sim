@@ -1,0 +1,16 @@
+{
+  "name": "The Reach King",
+  "archetype": "Aggressive",
+  "quotes": {
+    "round_early": [
+      "I just really believe in this guy.",
+      "If you want your guy, you gotta go get him. ADP is just a suggestion.",
+      "Drafting for October, not for the draft board."
+    ],
+    "generic": [
+      "He won't be there next round, I promise you.",
+      "Quality over ADP. Every time.",
+      "Bold moves win championships."
+    ]
+  }
+}

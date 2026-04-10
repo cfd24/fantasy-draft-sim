@@ -10,11 +10,17 @@ from pybaseball import (
 )
 import time
 import io
+import glob
+
+# Standard 5x5 Categories
+HITTER_CATEGORIES = ['R', 'HR', 'RBI', 'SB', 'AVG']
+PITCHER_CATEGORIES = ['W', 'SO', 'SV', 'ERA', 'WHIP']
 
 # Enable pybaseball caching
 pybaseball.cache.enable()
 
 CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cache")
+LAHMAN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "lahman")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 # Patch requests with a realistic browser User-Agent
@@ -96,3 +102,83 @@ def get_pitching_stats(year):
         print(f"Statcast Pitching fallback failed: {e}")
         
     return None
+
+def load_lahman_batting(year):
+    """Load historical batting stats from Lahman CSV for a specific year."""
+    file_path = os.path.join(LAHMAN_DIR, "Batting.csv")
+    people_path = os.path.join(LAHMAN_DIR, "People.csv")
+    
+    if not os.path.exists(file_path):
+        print(f"Lahman Batting file not found at {file_path}")
+        return None
+        
+    df = pd.read_csv(file_path)
+    df = df[df['yearID'] == year].copy()
+    
+    # Calculate AVG
+    df['AVG'] = (df['H'] / df['AB']).fillna(0)
+    
+    # Merge with People to get full names
+    if os.path.exists(people_path):
+        people = pd.read_csv(people_path, usecols=['playerID', 'nameFirst', 'nameLast'])
+        df = df.merge(people, on='playerID', how='left')
+        df['name'] = df['nameFirst'] + " " + df['nameLast']
+        
+    return df
+
+def load_lahman_pitching(year):
+    """Load historical pitching stats from Lahman CSV for a specific year."""
+    file_path = os.path.join(LAHMAN_DIR, "Pitching.csv")
+    people_path = os.path.join(LAHMAN_DIR, "People.csv")
+    
+    if not os.path.exists(file_path):
+        print(f"Lahman Pitching file not found at {file_path}")
+        return None
+        
+    df = pd.read_csv(file_path)
+    df = df[df['yearID'] == year].copy()
+    
+    # Calculate WHIP: (BB + H) / IP
+    # Lahman has IPouts (innings pitched * 3)
+    df['IP'] = df['IPouts'] / 3
+    df['WHIP'] = ((df['BB'] + df['H']) / df['IP']).fillna(0)
+    
+    # Merge with People to get full names
+    if os.path.exists(people_path):
+        people = pd.read_csv(people_path, usecols=['playerID', 'nameFirst', 'nameLast'])
+        df = df.merge(people, on='playerID', how='left')
+        df['name'] = df['nameFirst'] + " " + df['nameLast']
+        
+    return df
+
+def get_player_positions(year):
+    """Get the primary position for each player in a given year based on games played."""
+    file_path = os.path.join(LAHMAN_DIR, "Fielding.csv")
+    if not os.path.exists(file_path):
+        return None
+        
+    df = pd.read_csv(file_path)
+    df = df[df['yearID'] == year].copy()
+    
+    if len(df) == 0:
+        return None
+    
+    # For each player, find the position where they played the most games
+    # POS values: P, C, 1B, 2B, 3B, SS, OF
+    idx = df.groupby('playerID')['G'].idxmax()
+    return df.loc[idx, ['playerID', 'POS']]
+
+def load_full_player_pool(year):
+    """Load both hitters and pitchers for a year with stats and positions."""
+    batting = load_lahman_batting(year)
+    pitching = load_lahman_pitching(year)
+    positions = get_player_positions(year)
+    
+    if batting is not None and positions is not None:
+        batting = batting.merge(positions, on='playerID', how='left')
+    
+    if pitching is not None:
+        # Pitchers are always 'P' in valuation context for roster slots
+        pitching['POS'] = 'P'
+        
+    return batting, pitching

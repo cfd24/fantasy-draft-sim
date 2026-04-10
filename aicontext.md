@@ -15,10 +15,11 @@ It also supports an LLM-powered AI GM bot that drafts on behalf of a team and ex
 - **Environment Fix:** Fixed a critical `cryptography` architecture mismatch (`arm64` vs `x86_64`) on Mac by building from source.
 - **Data Ingestion (`loader.py`):** Uses a **global requests patch** with browser-level headers to bypass 403 Forbidden errors on FanGraphs/BRef.
 - **Caching:** Local cache in `backend/cache/` to minimize web requests.
-- **Current Data Status:** Cached 2023 data currently only has Statcast metrics (exit velo, etc.) due to initial scraping blocks; need full 5x5 Roto stats for next steps.
+- **Current Data Status:** Using Lahman Baseball Database (1871-2024) for historical backtesting.
+- **V1 Core Engine:** Fully integrated with 17-man rosters, position scarcity multipliers (C: 1.25x), bot dialogue system, and "The Oracle" scoring engine.
 
 ## Next/Ongoing Steps Summary
-Currently operating under "Phase 0". The immediate priority is **Data Refinement**: securing the standard 5x5 stats (HR, RBI, R, SB, W, SV, K, ERA, WHIP) and implementing the **Z-Score Valuation** engine in `backend/valuation.py`.
+Transitioning to **Phase 1: SF Launch**. The immediate priority is the **React Frontend** to visualize the draft board, player pool, and bot dialogue.
 
 
 *For full project specifications and timelines, please consult the `README.md`.*

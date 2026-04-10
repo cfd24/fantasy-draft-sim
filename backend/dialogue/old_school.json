@@ -1,0 +1,20 @@
+{
+  "name": "Old School Stan",
+  "archetype": "Traditional",
+  "quotes": {
+    "round_early": [
+      "You can't measure heart with a spreadsheet.",
+      "Give me a guy who knows how to put the ball in play. The rest is just noise.",
+      "Back in my day, we drafted winners, not exit velocities."
+    ],
+    "value_pick": [
+      "A pure hitter. High average, high character. Steal of the draft.",
+      "He’s a baseball player, plain and simple. I like the way he carries himself."
+    ],
+    "generic": [
+      "Win the game, don't win the math contest.",
+      "Still waiting for a computer to teach a guy how to hit a curveball.",
+      "ERA and Wins. That's all I need to see on a pitcher's card."
+    ]
+  }
+}
