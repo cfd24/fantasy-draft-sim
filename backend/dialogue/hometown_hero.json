@@ -1,0 +1,14 @@
+{
+    "name": "Hometown Hero",
+    "description": "Always drafts players from local or favorite teams, ignoring value.",
+    "weights": {
+        "total_z": 0.5,
+        "hometown_bias": 3.0
+    },
+    "quotes": [
+        "Can't pass up a guy who plays for the right uniform.",
+        "Team chemistry matters more than whatever your spreadsheets say.",
+        "I'm building a team of guys you'd actually want to grab a beer with.",
+        "He's got the right patch on his sleeve, that's what matters."
+    ]
+}

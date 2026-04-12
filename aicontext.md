@@ -16,10 +16,9 @@ It also supports an LLM-powered AI GM bot that drafts on behalf of a team and ex
 - **Data Ingestion (`loader.py`):** Uses a **global requests patch** with browser-level headers to bypass 403 Forbidden errors on FanGraphs/BRef.
 - **Caching:** Local cache in `backend/cache/` to minimize web requests.
 - **Current Data Status:** Using Lahman Baseball Database (1871-2024) for historical backtesting.
-- **V1 Core Engine:** Fully integrated with 17-man rosters, position scarcity multipliers (C: 1.25x), bot dialogue system, and "The Oracle" scoring engine.
+- **Phase 6 Complete:** Fully integrated with 17-man rosters, position scarcity multipliers (C: 1.25x), a 5-bot dialogue system, and "The Oracle" scoring engine. Frontend is modularized into dedicated React components.
 
-## Next/Ongoing Steps Summary
-Transitioning to **Phase 1: SF Launch**. The immediate priority is the **React Frontend** to visualize the draft board, player pool, and bot dialogue.
+Transitioning to **Phase 2: Senior Year**. The immediate priority is preparing for a **Staging Deployment** and expanding the historical data coverage beyond 2023.
 
 
 *For full project specifications and timelines, please consult the `README.md`.*

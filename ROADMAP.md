@@ -337,17 +337,17 @@ fantasy-draft-sim/
 
 ### Phase 0 — Spain (Now → July 8, 30 min/day)
 - ✅ Week 1: repo setup, data ingestion working, CSVs cached
-- Week 2: z-score valuation working, player rankings make sense
-- Week 3: snake draft engine in terminal, ADP bot picks correctly
-- Week 4-8: 2-3 more bot strategies, end-of-season scoring working
+- ✅ Week 2: z-score valuation working, player rankings make sense
+- ✅ Week 3: snake draft engine in terminal, ADP bot picks correctly
+- ✅ Week 4-8: 2-3 more bot strategies, end-of-season scoring working
 - **Goal by July 8**: full terminal draft simulation working. 10 bots, 15 rounds, correct scoring.
 
 ### Phase 1 — SF (July 8 → mid August, full time)
-- Week 1: FastAPI backend, all draft logic behind REST endpoints
-- Week 2: React frontend — draft board, player pool, team panel
-- Week 3: AI GM bot integrated, bot dialogue working, WebSockets for live updates
-- Week 4: Results page, deployment on CSUA + Vercel
-- Week 5: Polish, README, blog post about one interesting technical decision
+- ✅ Week 1: FastAPI backend, all draft logic behind REST endpoints
+- ✅ Week 2: React frontend — draft board, player pool, team panel
+- ✅ Week 3: AI GM bot integrated, bot dialogue working, WebSockets for live updates
+- [ ] Week 4: Results page, deployment on CSUA + Vercel
+- [ ] Week 5: Polish, README, blog post about one interesting technical decision
 
 ### Phase 2 — Senior Year (side project)
 - Supabase auth + saved draft history

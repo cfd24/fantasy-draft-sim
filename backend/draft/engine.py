@@ -21,7 +21,7 @@ class Roster:
         self.players = []
         self.filled_slots = {slot: 0 for slot in self.SLOTS}
 
-    def add_player(self, player_id, player_name, position):
+    def add_player(self, player_id, player_name, position, pick_num=0):
         """
         Adds a player to the first available eligible slot.
         """
@@ -38,20 +38,38 @@ class Roster:
         # Try primary position
         if target_pos in self.SLOTS and self.filled_slots[target_pos] < self.SLOTS[target_pos]:
             self.filled_slots[target_pos] += 1
-            self.players.append({'playerID': player_id, 'name': player_name, 'pos': position, 'slot': target_pos})
+            self.players.append({
+                'playerID': player_id, 
+                'name': player_name, 
+                'pos': position, 
+                'slot': target_pos,
+                'pick_num': pick_num
+            })
             return True
             
         # Try UTIL (Hitters only)
         hitters = ['1B', '2B', '3B', 'SS', 'OF', 'C']
         if position in hitters and self.filled_slots['UTIL'] < self.SLOTS['UTIL']:
             self.filled_slots['UTIL'] += 1
-            self.players.append({'playerID': player_id, 'name': player_name, 'pos': position, 'slot': 'UTIL'})
+            self.players.append({
+                'playerID': player_id, 
+                'name': player_name, 
+                'pos': position, 
+                'slot': 'UTIL',
+                'pick_num': pick_num
+            })
             return True
             
         # Try BN
         if self.filled_slots['BN'] < self.SLOTS['BN']:
             self.filled_slots['BN'] += 1
-            self.players.append({'playerID': player_id, 'name': player_name, 'pos': position, 'slot': 'BN'})
+            self.players.append({
+                'playerID': player_id, 
+                'name': player_name, 
+                'pos': position, 
+                'slot': 'BN',
+                'pick_num': pick_num
+            })
             return True
             
         return False # Roster full or no eligible slots
@@ -87,7 +105,7 @@ class DraftSession:
         team_idx = self.get_current_team_index()
         team = self.teams[team_idx]
         
-        if team.add_player(player_id, player_name, position):
+        if team.add_player(player_id, player_name, position, pick_num=self.current_pick):
             self.picks_log.append({
                 'pick': self.current_pick,
                 'team': team.team_name,

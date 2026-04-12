@@ -83,6 +83,14 @@ ARCHETYPES = {
     },
     "The Reach King": {
         # Strategically picks based on slightly modified rankings
+    },
+    "Hometown Hero": {
+        # Overvalues hometown teams, handles inside dialogue logic if needed
+        "total_z": 0.5
+    },
+    "Sleeper Cell": {
+        # Focuses heavily on high variance or rookies
+        "total_z": 0.8
     }
 }
 

@@ -55,18 +55,52 @@ def calculate_team_performance(rosters, year):
     points_df['team_name'] = df['team_name']
     
     for cat in categories:
-        # For ERA and WHIP, lower is better
         ascending = (cat in ['ERA', 'WHIP'])
-        # rank() gives 1 to N. We want 1st place to get num_teams points.
         if ascending:
             points_df[f'{cat}_pts'] = df[cat].rank(ascending=False)
         else:
             points_df[f'{cat}_pts'] = df[cat].rank(ascending=True)
             
+    # Include raw stats in the breakdown for the UI
+    for cat in categories:
+        points_df[cat] = df[cat]
+
     # Sum points
     pts_cols = [c for c in points_df.columns if c.endswith('_pts')]
     points_df['total_points'] = points_df[pts_cols].sum(axis=1)
     
+    # 4. Steals & Busts Analysis
+    # We need to rank EVERY player in the dataset by actual season performance to find steals
+    batting['full_z'] = (batting[HITTER_CATEGORIES].sub(batting[HITTER_CATEGORIES].mean()) / batting[HITTER_CATEGORIES].std()).sum(axis=1)
+    pitching['full_z'] = (pitching[PITCHER_CATEGORIES].sub(pitching[PITCHER_CATEGORIES].mean()) / pitching[PITCHER_CATEGORIES].std()).sum(axis=1)
+    
+    all_players = pd.concat([batting[['playerID', 'name', 'full_z']], pitching[['playerID', 'name', 'full_z']]])
+    all_players['actual_rank'] = all_players['full_z'].rank(ascending=False)
+    
+    steals_busts = []
+    for team_name, players in rosters.items():
+        team_analysis = []
+        for p in players:
+            actual = all_players[all_players['playerID'] == p['playerID']]
+            if not actual.empty:
+                rank = actual.iloc[0]['actual_rank']
+                diff = p['pick_num'] - rank
+                team_analysis.append({'name': p['name'], 'diff': diff, 'rank': rank, 'pick': p['pick_num']})
+        
+        if team_analysis:
+            best = max(team_analysis, key=lambda x: x['diff'])
+            worst = min(team_analysis, key=lambda x: x['diff'])
+            steals_busts.append({
+                'team_name': team_name,
+                'top_steal': best['name'],
+                'steal_diff': int(best['diff']),
+                'biggest_bust': worst['name'],
+                'bust_diff': int(worst['diff'])
+            })
+            
+    sb_df = pd.DataFrame(steals_busts)
+    points_df = points_df.merge(sb_df, on='team_name', how='left')
+
     # Sort by total points
     points_df = points_df.sort_values('total_points', ascending=False)
     

@@ -30,3 +30,5 @@ soupsieve==2.8.3
 tqdm==4.67.3
 typing_extensions==4.15.0
 urllib3==2.6.3
+uvicorn==0.34.0
+gunicorn==23.0.0

@@ -44,14 +44,30 @@ async def init_draft(config: DraftInit):
     try:
         # 1. Generate point-in-time pool
         print(f"Initializing draft for {config.year}...")
-        hitters = get_point_in_time_pool(config.year, load_lahman_batting, HITTER_CATEGORIES)
-        pitchers = get_point_in_time_pool(config.year, load_lahman_pitching, PITCHER_CATEGORIES, is_pitcher=True)
+        
+        # Check cache first (from data_cli.py priming)
+        from loader import CACHE_DIR
+        h_cache = os.path.join(CACHE_DIR, f"valuation_hitters_{config.year}.csv")
+        p_cache = os.path.join(CACHE_DIR, f"valuation_pitchers_{config.year}.csv")
+        
+        if os.path.exists(h_cache) and os.path.exists(p_cache):
+            print(f"Loading {config.year} pool from cache...")
+            hitters = pd.read_csv(h_cache)
+            pitchers = pd.read_csv(p_cache)
+        else:
+            print(f"Cache miss for {config.year}. Generating on the fly...")
+            hitters = get_point_in_time_pool(config.year, load_lahman_batting, HITTER_CATEGORIES)
+            pitchers = get_point_in_time_pool(config.year, load_lahman_pitching, PITCHER_CATEGORIES, is_pitcher=True)
         
         if hitters is None or pitchers is None:
             raise HTTPException(status_code=500, detail="Failed to load historical data")
             
         # Combine & clean
         cols = ['playerID', 'name', 'POS', 'total_z', 'z_HR', 'z_SB', 'z_SO', 'z_W', 'z_ERA']
+        # Ensure all columns exist (ERA/SO might be missing if pitcher columns)
+        # Actually hitters have z_HR, z_SB, z_SO (for hitters?), z_AVG
+        # Pitchers have z_W, z_SO, z_SV, z_ERA, z_WHIP
+        # The pool combination needs to be smart
         h_limited = hitters.reindex(columns=cols).fillna(0)
         p_limited = pitchers.reindex(columns=cols).fillna(0)
         pool = pd.concat([h_limited, p_limited]).sort_values('total_z', ascending=False)
@@ -205,3 +221,8 @@ async def evaluate_draft(draft_id: str):
     performance = calculate_team_performance(rosters_dict, data["year"])
     
     return performance.to_dict(orient="records")
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)

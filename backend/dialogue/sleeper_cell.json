@@ -1,0 +1,15 @@
+{
+    "name": "Sleeper Cell",
+    "description": "Always looking for high-upside rookies and bounce-back candidates. Ignores safe floors.",
+    "weights": {
+        "total_z": 0.8,
+        "rookie_hype": 1.5,
+        "bounce_back": 1.2
+    },
+    "quotes": [
+        "This guy is a league-winner if he gets the playing time.",
+        "You draft for floor, I draft for ceiling.",
+        "Everyone else is sleeping on his underlying metrics.",
+        "This is the steal of the draft right here."
+    ]
+}
