@@ -1,0 +1,10 @@
+# Nixpacks configuration to explicitly handle monorepo backend deployment
+[phases.setup]
+  nixPkgs = ["python311", "gcc"]
+
+[phases.install]
+  cmds = ["pip install -r backend/requirements.txt"]
+
+[start]
+  # CD into backend so the app runs with expected local paths (e.g. for Lahman data)
+  cmd = "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
