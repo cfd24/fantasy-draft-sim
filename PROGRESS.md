@@ -119,7 +119,12 @@ This file tracks the day-by-day evolution of the project. **MANDATORY:** Update 
 - [x] **Results UI Component**: High-fidelity \`ResultsPage.jsx\` with Radar Charts created. [x]
 - [x] **Bulk Data Fetcher**: Created and executed \`data_cli.py\`. [x]
 - [x] **Data Range Expansion**: 2018–2024 historical pools primed and cached. [x]
-- [x] **Deployment**: Backend configured with \`Procfile\`; Frontend built and integrated into portfolio at \`/draft/\`. [x]
+- [x] **Portfolio Integration**: Frontend built at \`/draft/\`. [x]
+
+### Deployment Log (Railway Wall)
+- **Attempt 1**: Standard push to root. Failed (No app detected).
+- **Attempt 2**: Added \`railway.json\` with \`rootDirectory: "backend"\`. Failed (Ignored by Railpack).
+- **Attempt 3 (Active)**: Added Root-level \`nixpacks.toml\` to explicitly define setup, install, and start phases for the \`backend/\` folder. Removed \`railway.json\`.
 
 ### Next Milestones (Phase 2)
 - [ ] **Supabase Integration**: Automate draft saving to a persistent database.
