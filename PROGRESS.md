@@ -120,13 +120,9 @@ This file tracks the day-by-day evolution of the project. **MANDATORY:** Update 
 - [x] **Bulk Data Fetcher**: Created and executed \`data_cli.py\`. [x]
 - [x] **Data Range Expansion**: 2018–2024 historical pools primed and cached. [x]
 - [x] **Portfolio Integration**: Frontend built at \`/draft/\`. [x]
+- [x] **Live Launch**: Backend live on Railway, successfully linked to Portfolio. [x]
 
-### Deployment Log (Railway Wall)
-- **Attempt 1**: Standard push to root. Failed (No app detected).
-- **Attempt 2**: Added \`railway.json\` with \`rootDirectory: "backend"\`. Failed (Ignored by Railpack).
-- **Attempt 3 (Active)**: Added Root-level \`nixpacks.toml\` to explicitly define setup, install, and start phases for the \`backend/\` folder. Removed \`railway.json\`.
-
-### Next Milestones (Phase 2)
+### Next Milestones (Phase 3)
 - [ ] **Supabase Integration**: Automate draft saving to a persistent database.
 - [ ] **Auth**: User accounts to track personal draft history.
-- [ ] **Railway Launch**: Push backend to live production environment.
+- [ ] **Draft History UI**: View and compare past simulations.
