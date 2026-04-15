@@ -15,6 +15,8 @@ from data.valuation import get_point_in_time_pool
 from draft.engine import DraftSession
 from draft.bots.persona_bot import create_bot, ARCHETYPES
 from draft.scoring import calculate_team_performance
+from db import create_draft_record, save_pick, save_final_results, get_user_draft_history, supabase
+from fastapi import Header
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -40,7 +42,16 @@ class DraftInit(BaseModel):
     ai_gm_enabled: bool = False
 
 @app.post("/draft/init")
-async def init_draft(config: DraftInit):
+async def init_draft(config: DraftInit, authorization: Optional[str] = Header(None)):
+    user_id = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ")[1]
+        try:
+            user_data = supabase.auth.get_user(token)
+            user_id = user_data.user.id
+        except Exception as e:
+            print(f"Auth failed: {e}")
+            # We'll allow anonymous drafts for now, but not persisted to DB
     try:
         # 1. Generate point-in-time pool
         print(f"Initializing draft for {config.year}...")
@@ -91,8 +102,16 @@ async def init_draft(config: DraftInit):
             "pool": pool,
             "bots": bots,
             "config": config,
-            "year": config.year
+            "year": config.year,
+            "user_id": user_id,
+            "db_id": None
         }
+        
+        # 4. Save to DB if user is logged in
+        if user_id:
+            db_id = create_draft_record(user_id, config.year, config.num_teams, config.num_rounds)
+            active_drafts[draft_id]["db_id"] = db_id
+            print(f"Draft saved to DB with ID: {db_id}")
         
         return {"draft_id": draft_id, "year": config.year, "status": "initialized"}
     except Exception as e:
@@ -157,6 +176,11 @@ async def make_pick(draft_id: str, pick: Optional[PickRequest] = None):
         if session.make_pick(player['playerID'], player['name'], player['POS']):
             # Add playerID to the log entry manually if engine didn't
             session.picks_log[-1]['playerID'] = player['playerID']
+            
+            # Sync to DB
+            if data["db_id"]:
+                save_pick(data["db_id"], session.current_pick - 1, player['playerID'], player['name'], team_idx, player['POS'])
+                
             return {"status": "success", "pick": session.picks_log[-1]}
         else:
             raise HTTPException(status_code=400, detail="Invalid pick (roster full at that position)")
@@ -174,6 +198,11 @@ async def make_pick(draft_id: str, pick: Optional[PickRequest] = None):
             # Catch the quote if it's a PersonaBot
             quote = getattr(bot, "last_quote", "")
             
+            # Sync to DB
+            if data["db_id"]:
+                save_pick(data["db_id"], session.current_pick - 1, player['playerID'], player['name'], team_idx, player['POS'], 
+                         persona=getattr(bot, "archetype_name", "Bot"), quote=quote)
+                
             return {
                 "status": "bot_success", 
                 "pick": session.picks_log[-1], 
@@ -220,7 +249,28 @@ async def evaluate_draft(draft_id: str):
     # Calculate performance for the draft year
     performance = calculate_team_performance(rosters_dict, data["year"])
     
+    # Sync final scores to DB
+    if data["db_id"]:
+        try:
+            save_final_results(data["db_id"], performance.to_dict(orient="records"))
+            print(f"Final results saved to DB for draft {data['db_id']}")
+        except Exception as e:
+            print(f"Failed to save results: {e}")
+            
     return performance.to_dict(orient="records")
+
+@app.get("/drafts/user/history")
+async def get_history(authorization: Optional[str] = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Authentication required")
+        
+    token = authorization.split(" ")[1]
+    try:
+        user_data = supabase.auth.get_user(token)
+        user_id = user_data.user.id
+        return get_user_draft_history(user_id)
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Invalid session: {e}")
 
 if __name__ == "__main__":
     import uvicorn

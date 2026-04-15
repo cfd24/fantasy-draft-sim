@@ -5,8 +5,12 @@ import PlayerPool from './components/PlayerPool';
 import ResultsPage from './components/ResultsPage';
 import BotDialogue from './components/BotDialogue';
 import RosterSidebar from './components/RosterSidebar';
+import HistoryPage from './components/HistoryPage';
+import AuthModal from './components/AuthModal';
+import { supabase } from './supabase';
+import { User as UserIcon, LogOut, History } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
+const API_BASE = "https://fantasy-draft-sim-production.up.railway.app";
 
 function App() {
   const [draftId, setDraftId] = useState(null);
@@ -18,6 +22,31 @@ function App() {
   const [selectedYear, setSelectedYear] = useState(2023);
 
   const [results, setResults] = useState(null);
+  const [user, setUser] = useState(null);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+
+  useEffect(() => {
+    // Check active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const getHeaders = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.access_token) {
+      return { 'Authorization': `Bearer ${session.access_token}` };
+    }
+    return {};
+  };
 
   const availableYears = [2018, 2019, 2020, 2021, 2022, 2023, 2024];
 
@@ -28,7 +57,8 @@ function App() {
     setState(null);
     setAvailable([]);
     try {
-      const res = await axios.post(`${API_BASE}/draft/init`, { year });
+      const headers = await getHeaders();
+      const res = await axios.post(`${API_BASE}/draft/init`, { year }, { headers });
       setDraftId(res.data.draft_id);
       fetchState(res.data.draft_id);
     } catch (err) {
@@ -39,7 +69,8 @@ function App() {
 
   const fetchResults = async (id) => {
     try {
-      const res = await axios.post(`${API_BASE}/draft/${id}/evaluate`);
+      const headers = await getHeaders();
+      const res = await axios.post(`${API_BASE}/draft/${id}/evaluate`, {}, { headers });
       setResults(res.data);
     } catch (err) {
       console.error(err);
@@ -48,7 +79,8 @@ function App() {
 
   const fetchState = async (id) => {
     try {
-      const res = await axios.get(`${API_BASE}/get_state` ? `${API_BASE}/draft/${id}/state` : `${API_BASE}/draft/${id}/state`);
+      const headers = await getHeaders();
+      const res = await axios.get(`${API_BASE}/draft/${id}/state`, { headers });
       setState(res.data);
       if (res.data.is_complete) {
         fetchResults(id);
@@ -66,7 +98,8 @@ function App() {
 
   const fetchAvailable = async (id) => {
     try {
-      const res = await axios.get(`${API_BASE}/draft/${id}/available?limit=50`);
+      const headers = await getHeaders();
+      const res = await axios.get(`${API_BASE}/draft/${id}/available?limit=50`, { headers });
       setAvailable(res.data);
     } catch (err) {
       console.error(err);
@@ -76,7 +109,8 @@ function App() {
   const handlePick = async (playerId) => {
     if (!state?.is_user_turn) return;
     try {
-      await axios.post(`${API_BASE}/draft/${draftId}/pick`, { player_id: playerId });
+      const headers = await getHeaders();
+      await axios.post(`${API_BASE}/draft/${draftId}/pick`, { player_id: playerId }, { headers });
       fetchState(draftId);
     } catch (err) {
       alert("Invalid pick or slot full!");
@@ -85,7 +119,8 @@ function App() {
 
   const handleBotPick = async (id) => {
     try {
-      await axios.post(`${API_BASE}/draft/${id}/pick`);
+      const headers = await getHeaders();
+      await axios.post(`${API_BASE}/draft/${id}/pick`, {}, { headers });
       fetchState(id);
     } catch (err) {
       console.error(err);
@@ -118,8 +153,39 @@ function App() {
           </p>
         </div>
         
-        <div className="flex gap-4 items-center">
-          {!draftId && (
+          <div className="flex gap-4 items-center">
+            {user ? (
+              <div className="flex gap-3 items-center">
+                <button 
+                  onClick={() => setShowHistory(true)}
+                  className="p-2 text-slate-400 hover:text-cyan-400 transition-colors"
+                  title="My Drafts"
+                >
+                  <History size={20} />
+                </button>
+                <div className="h-8 w-[1px] bg-white/10 mx-1" />
+                <div className="flex flex-col items-end mr-2">
+                  <span className="text-[10px] uppercase font-bold text-slate-500">Hunter</span>
+                  <span className="text-xs font-semibold text-slate-300">{user.email.split('@')[0]}</span>
+                </div>
+                <button 
+                  onClick={() => supabase.auth.signOut()}
+                  className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setIsAuthOpen(true)}
+                className="btn-primary px-4 py-2 flex items-center gap-2"
+              >
+                <UserIcon size={16} />
+                Sign In to Save
+              </button>
+            )}
+
+            {!draftId && (
              <div className="flex gap-2 items-center mr-4">
                <span className="text-xs uppercase opacity-50 font-bold">Time Machine:</span>
                <select 
@@ -151,29 +217,43 @@ function App() {
           </div>
         )}
         
-        {/* Player Pool Column */}
-        <section className="col-span-12 lg:col-span-8">
-          <div className="glass-panel p-6 h-[80vh] flex flex-col">
-            {state?.is_complete ? (
-              <ResultsPage state={state} results={results} />
-            ) : (
-              <PlayerPool 
-                available={available} 
-                search={search} 
-                setSearch={setSearch} 
-                state={state} 
-                handlePick={handlePick} 
-              />
-            )}
+        {showHistory ? (
+          <div className="col-span-12">
+            <HistoryPage user={user} onBack={() => setShowHistory(false)} />
           </div>
-        </section>
+        ) : (
+          <>
+            {/* Player Pool Column */}
+            <section className="col-span-12 lg:col-span-8">
+              <div className="glass-panel p-6 h-[80vh] flex flex-col">
+                {state?.is_complete ? (
+                  <ResultsPage state={state} results={results} />
+                ) : (
+                  <PlayerPool 
+                    available={available} 
+                    search={search} 
+                    setSearch={setSearch} 
+                    state={state} 
+                    handlePick={handlePick} 
+                  />
+                )}
+              </div>
+            </section>
 
-        {/* Roster & Dialogue Column */}
-        <section className="col-span-12 lg:col-span-4 flex flex-col gap-6">
-          <BotDialogue state={state} />
-          <RosterSidebar state={state} />
-        </section>
+            {/* Roster & Dialogue Column */}
+            <section className="col-span-12 lg:col-span-4 flex flex-col gap-6">
+              <BotDialogue state={state} />
+              <RosterSidebar state={state} />
+            </section>
+          </>
+        )}
       </main>
+
+      <AuthModal 
+        isOpen={isAuthOpen} 
+        onClose={() => setIsAuthOpen(false)} 
+        onAuthSuccess={(user) => setUser(user)} 
+      />
     </div>
   );
 }
