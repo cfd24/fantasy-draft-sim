@@ -29,6 +29,9 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo: window.location.origin + window.location.pathname,
+          }
         });
         if (error) throw error;
         alert('Check your email for the confirmation link!');

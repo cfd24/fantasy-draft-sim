@@ -123,6 +123,37 @@ This file tracks the day-by-day evolution of the project. **MANDATORY:** Update 
 - [x] **Live Launch**: Backend live on Railway, successfully linked to Portfolio. [x]
 
 ### Next Milestones (Phase 3)
-- [ ] **Supabase Integration**: Automate draft saving to a persistent database.
-- [ ] **Auth**: User accounts to track personal draft history.
-- [ ] **Draft History UI**: View and compare past simulations.
+- [x] **Supabase Integration**: Automate draft saving to a persistent database.
+- [x] **Auth**: User accounts to track personal draft history.
+- [x] **Draft History UI**: View and compare past simulations.
+
+## 2026-04-15: Phase 3 Completion — Persistence & Authenticated Experience
+
+### What Happened
+- **Supabase Integration**:
+  - Implemented **Supabase Auth** (Login/Signup) with email confirmation logic.
+  - Developed `backend/db.py` to handle real-time pick syncing and final results persistence.
+  - Optimized database connection with `.strip()` and updated `supabase-py` SDK (v2.28.3) to support new API key formats.
+- **Frontend Overhaul**:
+  - Balanced the UI with a premium **AuthModal** and a glassmorphism **HistoryPage**.
+  - Enhanced state management to handle Bearer tokens for all backend API requests.
+  - Implemented secure redirect logic so users land back on the `/draft` page after email verification.
+- **Infrastructure**:
+  - Verified and finalized Railway environment variables for production.
+  - Synced and pushed the final Phase 3 build to the portfolio website.
+
+### Time Spent
+- **Total**: ~3 hours
+- **Brainstorming**: 1 hour (Auth flows and redirect handling)
+- **Implementation**: 2 hours (Database hooks, Auth UI, and bug fixing)
+
+### Next Milestones (V3 / Phase 4)
+- [ ] **Season Simulation (Monte Carlo)**: Predict future seasons based on statistical distributions.
+- [ ] **Waiver Wire & Injuries**: Add dynamic mid-simulation events.
+- [ ] **Mobile Optimization**: Ensure the draft board is fully responsive for smaller tablets.
+
+### Stopping Point Status
+- **Auth**: Fully functional (Login/Signup/Confirm).
+- **Persistence**: Drafts and picks are saved to PostgreSQL in real-time.
+- **Live**: Backend live on Railway, Frontend live on Portfolio (crisostomodunn.com/draft).
+- **Git**: All work committed and pushed to `fantasy-draft-sim`.

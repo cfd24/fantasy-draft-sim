@@ -154,18 +154,17 @@ Every bot, including the AI GM, implements this one function. That's it.
 ## V2 — User Accounts + Draft History (Fall 2026 / side project)
 
 ### Features
-- Sign up / log in (email or Google)
-- Every draft you do is saved automatically
-- Draft history page: see all your past drafts with year, strategy, final standing
-- Stats across all your drafts: average finish, best draft, worst draft, favorite strategy
-- "Your best ever draft was 2019 where you finished 1st out of 10 with a punt ERA strategy"
-- Compare two of your past drafts side by side
+- [x] Sign up / log in (email or Google) [DONE]
+- [x] Every draft you do is saved automatically [DONE]
+- [x] Draft history page: see all your past drafts [DONE]
+- [ ] Stats across all your drafts: average finish, best draft, worst draft
+- [ ] Comparison: Compare two of your past drafts side by side
 
 ### How to implement
-- **Supabase** for auth + database (free tier, integrates perfectly with React + Vercel)
-- Tables: `users`, `drafts`, `draft_picks`, `draft_results`
-- Each draft saves: year, settings, all 150 picks in order, final standings
-- Frontend auth with Supabase's built-in React hooks — takes like 2 hours to set up
+- **Supabase** for auth + database [DONE]
+- Tables: `users`, `drafts`, `picks`, `draft_results` [DONE]
+- Each draft saves: year, settings, all picks in order, final standings [DONE]
+- Frontend auth with Supabase client [DONE]
 
 **Tech**: Supabase, React, FastAPI
 
