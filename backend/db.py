@@ -8,13 +8,14 @@ from supabase import create_client, Client
 # Load environment variables from .env
 load_dotenv()
 
-url: str = os.getenv("SUPABASE_URL")
-key: str = os.getenv("SUPABASE_KEY")
+url: str = os.getenv("SUPABASE_URL", "").strip()
+key: str = os.getenv("SUPABASE_KEY", "").strip()
 
 if not url or not key:
     print("WARNING: SUPABASE_URL or SUPABASE_KEY not found in environment.")
     supabase: Client = None
 else:
+    # Key validation: Supabase keys usually start with 'eyJ' (legacy) or 'sb_secret_' (new)
     supabase: Client = create_client(url, key)
 
 def create_draft_record(user_id, year, num_teams, num_rounds):
